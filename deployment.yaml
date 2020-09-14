@@ -1,0 +1,40 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: firstapi
+  namespace: my-app
+  labels:
+    app: firstapi
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: firstapi
+  template:
+    metadata:
+      labels:
+        app: firstapi
+    spec:
+      containers:
+        - name: firstapi
+          image: acrgdcusdevsharedasvc.azurecr.io/galileo-mine-safety-web-ui:v100
+          ports:
+            - containerPort: 80
+      imagePullSecrets:
+        - name: acr-secret
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: firstapi-service
+  namespace: my-app
+  annotations:
+    service.beta.kubernetes.io/azure-load-balancer-internal: "true"
+    service.beta.kubernetes.io/azure-load-balancer-internal-subnet: "SNET-GD-CUS-DEV-MINE-ILB"
+spec:
+  type: LoadBalancer
+  loadBalancerIP: 10.188.193.27
+  ports:
+    - port: 80
+  selector:
+    app: firstapi
