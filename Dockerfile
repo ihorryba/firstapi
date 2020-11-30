@@ -15,5 +15,5 @@ RUN npm install
 # копируем исходный код
 COPY . .
 
-EXPOSE 3001
+EXPOSE 3000
 CMD [ "node", "app.js" ]
