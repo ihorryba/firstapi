@@ -40,16 +40,16 @@ stages:
           command: buildAndPush
           Dockerfile: $(Build.SourcesDirectory)/Dockerfile
           tags: latest
-      - task: AzureCLI@2
-        displayName: Set Environments variables
-        inputs:
-          azureSubscription: $(ARMServiceConnection)
-          scriptType: bash
-          scriptLocation: inlineScript
-          inlineScript: |
-            sed "s/{{db-host}}/`az keyvault secret show --name db-host --vault-name mykeyvaultwest --query value | base64`/g; \
-            	 s/{{db-name}}/`az keyvault secret show --name db-name --vault-name mykeyvaultwest --query value | base64`/g; \
-            	 s/{{db-password}}/`az keyvault secret show --name db-password --vault-name mykeyvaultwest --query value | base64`/g" ./firstapi-chart/firstapi-secret.yaml.tmpl > ./firstapi-chart/firstapi-secret.yaml
+#      - task: AzureCLI@2
+#        displayName: Set Environments variables
+#        inputs:
+#          azureSubscription: $(ARMServiceConnection)
+#          scriptType: bash
+#          scriptLocation: inlineScript
+#          inlineScript: |
+#            sed "s/{{db-host}}/`az keyvault secret show --name db-host --vault-name mykeyvaultwest --query value | base64`/g; \
+#            	 s/{{db-name}}/`az keyvault secret show --name db-name --vault-name mykeyvaultwest --query value | base64`/g; \
+#            	 s/{{db-password}}/`az keyvault secret show --name db-password --vault-name mykeyvaultwest --query value | base64`/g" ./firstapi-chart/firstapi-secret.yaml.tmpl > ./firstapi-chart/firstapi-secret.yaml
       - task: Kubernetes@1
         displayName: kubectl apply using arguments
         inputs:
