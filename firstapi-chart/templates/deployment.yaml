@@ -33,6 +33,22 @@ spec:
             {{- toYaml .Values.securityContext | nindent 12 }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
+          env:
+          - name: DB_USER
+            valueFrom:
+              secretKeyRef:
+                name: firstapi-secret
+                key: db-name
+          - name: DB_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: firstapi-secret
+                key: db-password
+          - name: DB_URL
+            valueFrom:
+              configMapKeyRef:
+                name: firstapi-configmap
+                key: db_host
           ports:
             - name: http
               containerPort: 3000
