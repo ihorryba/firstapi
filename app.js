@@ -14,7 +14,7 @@ const port = process.env.PORT || 3000;
 
 app.use(cors());
 
-app.get('/test', (req, res) => res.send('{ "data": "test" }'));
+app.get('/test', (req, res) => res.send(`{ "db_user": "${process.env.DB_USER}", "db_password": "${process.env.DB_PASSWORD}", "db_url": "${process.env.DB_URL}" }`));
 
 const server = http.createServer(app);
 

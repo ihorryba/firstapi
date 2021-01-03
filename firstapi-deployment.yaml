@@ -1,0 +1,54 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: firstapi-deployment
+  labels:
+    app: firstapi
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: firstapi
+  template:
+    metadata:
+      labels:
+        app: firstapi
+    spec:
+      containers:
+      - name: firstapi
+        image: mygroupname.azurecr.io/firstapi:latest
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 3000
+        env:
+        - name: DB_USER
+          valueFrom:
+            secretKeyRef:
+              name: firstapi-secret
+              key: db-name
+        - name: DB_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: firstapi-secret
+              key: db-password
+        - name: DB_URL
+          valueFrom:
+            configMapKeyRef:
+              name: firstapi-configmap
+              key: db_url
+      imagePullSecrets:
+        - name: acr-secret
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: firstapi-external-service
+spec:
+  selector:
+    app: firstapi
+  type: LoadBalancer
+  ports:
+    - protocol: TCP
+      port: 3000
+      targetPort: 3000
+      nodePort: 30000
