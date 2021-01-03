@@ -72,4 +72,4 @@ stages:
           scriptLocation: inlineScript
           inlineScript: |
             az aks get-credentials --resource-group=MyGroup --name=myclusterwest
-            helm upgrade firstapi . -f ./values.yaml
+            helm upgrade --install firstapi . -f ./values.yaml
