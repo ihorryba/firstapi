@@ -6,9 +6,12 @@ resources:
 
 variables:
   ARMServiceConnection: kuber-deployment
-  imageRepository: firstapi
-  containerRegistry: mynewcrg.azurecr.io
+  imageRepository: mycontainerwest.azurecr.io/firstapi
+  containerRegistry: mycontainerwest
   dockerfilePath: $(Build.SourcesDirectory)/Dockerfile
+  kubernetesCluster: myclusterwest
+  keyVault: mykeyvaultwest
+  resourceGroup: MyGroup
   tag: $(Build.BuildId)
 
   vmImageName: ubuntu-latest
@@ -32,14 +35,14 @@ stages:
           azureSubscription: $(ARMServiceConnection)
           scriptType: bash
           scriptLocation: inlineScript
-          inlineScript: az acr login -n mycontainerwest
+          inlineScript: az acr login -n $(containerRegistry)
       - task: Docker@2
         displayName: Build and push image...
         inputs:
-          repository: mycontainerwest.azurecr.io/firstapi
+          repository: $(imageRepository)
           command: buildAndPush
-          Dockerfile: $(Build.SourcesDirectory)/Dockerfile
-          tags: v1
+          Dockerfile: $(dockerfilePath)
+          tags: v2
       - task: AzureCLI@2
         displayName: Set Environments variables
         inputs:
@@ -47,17 +50,17 @@ stages:
           scriptType: bash
           scriptLocation: inlineScript
           inlineScript: |
-            sed "s/{{db-host}}/`az keyvault secret show --name db-host --vault-name mykeyvaultwest --query value | base64`/g; \
-            	 s/{{db-name}}/`az keyvault secret show --name db-name --vault-name mykeyvaultwest --query value | base64`/g; \
-            	 s/{{db-password}}/`az keyvault secret show --name db-password --vault-name mykeyvaultwest --query value | base64`/g" ./firstapi-chart/firstapi-secret.yaml.tmpl > ./firstapi-chart/firstapi-secret.yaml
+            sed "s/{{db-host}}/`az keyvault secret show --name db-host --vault-name $(keyVault) --query value | base64`/g; \
+            	 s/{{db-name}}/`az keyvault secret show --name db-name --vault-name $(keyVault) --query value | base64`/g; \
+            	 s/{{db-password}}/`az keyvault secret show --name db-password --vault-name $(keyVault) --query value | base64`/g" ./firstapi-chart/firstapi-secret.yaml.tmpl > ./firstapi-chart/firstapi-secret.yaml
             cat ./firstapi-chart/firstapi-secret.yaml
       - task: Kubernetes@1
         displayName: kubectl apply using arguments
         inputs:
           connectionType: Azure Resource Manager
           azureSubscriptionEndpoint: $(ARMServiceConnection)
-          azureResourceGroup: MyGroup
-          kubernetesCluster: myclusterwest
+          azureResourceGroup: $(resourceGroup)
+          kubernetesCluster: $(kubernetesCluster)
           command: apply
           arguments: -f ./firstapi-chart/firstapi-secret.yaml
       - task: HelmInstaller@1
@@ -72,5 +75,5 @@ stages:
           workingDirectory: $(Build.SourcesDirectory)/firstapi-chart
           scriptLocation: inlineScript
           inlineScript: |
-            az aks get-credentials --resource-group=MyGroup --name=myclusterwest
+            az aks get-credentials --resource-group=$(resourceGroup) --name=$(kubernetesCluster)
             helm upgrade --install firstapi . -f ./values.yaml
