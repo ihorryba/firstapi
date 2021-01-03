@@ -49,7 +49,7 @@ stages:
           inlineScript: |
             sed "s/{{db-host}}/`az keyvault secret show --name db-host --vault-name mykeyvaultwest --query value | base64`/g; \
             	 s/{{db-name}}/`az keyvault secret show --name db-name --vault-name mykeyvaultwest --query value | base64`/g; \
-            	 s/{{db-password}}/`az keyvault secret show --name db-password --vault-name mykeyvaultwest --query value | base64`/g" $(Build.SourcesDirectory)/firstapi-chart/firstapi-secret.yaml.tmpl > $(Build.SourcesDirectory)/firstapi-chart/firstapi-secret.yaml
+            	 s/{{db-password}}/`az keyvault secret show --name db-password --vault-name mykeyvaultwest --query value | base64`/g" ./firstapi-chart/firstapi-secret.yaml.tmpl > ./firstapi-chart/firstapi-secret.yaml
       - task: Kubernetes@1
         displayName: kubectl apply using arguments
         inputs:
@@ -58,7 +58,7 @@ stages:
           azureResourceGroup: MyGroup
           kubernetesCluster: myclusterwest
           command: apply
-          arguments: -f $(Build.SourcesDirectory)/firstapi-chart/firstapi-secret.yaml
+          arguments: -f ./firstapi-chart/firstapi-secret.yaml
       - task: HelmInstaller@1
         displayName: Installing helm...
         inputs:
