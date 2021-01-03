@@ -46,7 +46,7 @@ spec:
                 key: db-password
           - name: DB_URL
             valueFrom:
-              configMapKeyRef:
+              secretKeyRef:
                 name: firstapi-secret
                 key: db_host
           ports:
