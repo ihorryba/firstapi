@@ -39,7 +39,7 @@ stages:
           repository: mycontainerwest.azurecr.io/firstapi
           command: buildAndPush
           Dockerfile: $(Build.SourcesDirectory)/Dockerfile
-          tags: latest
+          tags: v1
       - task: AzureCLI@2
         displayName: Set Environments variables
         inputs:
