@@ -53,10 +53,10 @@ stages:
           scriptType: bash
           scriptLocation: inlineScript
           inlineScript: |
-            sed "s/{{db-host}}/`az keyvault secret show --name db-host --vault-name $(keyVault) --query value | base64`/g; \
+            sed -i "s/{{image-name}}/$(imageRepository)/g" ./firstapi-chart/values.yaml
+            sed -i "s/{{db-host}}/`az keyvault secret show --name db-host --vault-name $(keyVault) --query value | base64`/g; \
             	 s/{{db-name}}/`az keyvault secret show --name db-name --vault-name $(keyVault) --query value | base64`/g; \
-            	 s/{{db-password}}/`az keyvault secret show --name db-password --vault-name $(keyVault) --query value | base64`/g" ./firstapi-chart/firstapi-secret.yaml.tmpl > ./firstapi-chart/firstapi-secret.yaml
-            cat ./firstapi-chart/firstapi-secret.yaml
+            	 s/{{db-password}}/`az keyvault secret show --name db-password --vault-name $(keyVault) --query value | base64`/g" ./firstapi-chart/firstapi-secret.yaml
       - task: Kubernetes@1
         displayName: Setting Env veriables...
         inputs:
@@ -79,4 +79,4 @@ stages:
           scriptLocation: inlineScript
           inlineScript: |
             az aks get-credentials --resource-group=$(resourceGroup) --name=$(kubernetesCluster)
-            helm upgrade --install firstapi . -f ./values.yaml
+            helm upgrade --install firstapi . -f ./values.yaml --namespace my-space
