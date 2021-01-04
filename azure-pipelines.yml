@@ -45,7 +45,7 @@ stages:
           repository: $(imageRepository)
           command: buildAndPush
           Dockerfile: $(dockerfilePath)
-          tags: v2
+          tags: v1
       - task: AzureCLI@2
         displayName: Getting Env veriables...
         inputs:
