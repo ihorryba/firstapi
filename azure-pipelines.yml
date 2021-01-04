@@ -79,4 +79,4 @@ stages:
           scriptLocation: inlineScript
           inlineScript: |
             az aks get-credentials --resource-group=$(resourceGroup) --name=$(kubernetesCluster)
-            helm upgrade --install firstapi . -f ./values.yaml --namespace my-space
+            helm upgrade --install firstapi . -f ./values.yaml
