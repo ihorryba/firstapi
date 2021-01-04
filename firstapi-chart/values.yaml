@@ -5,7 +5,7 @@
 replicaCount: 1
 
 image:
-  repository: mycontainerwest.azurecr.io/firstapi
+  repository: mycontainerwest.azurecr.io/firstapi-dev
   pullPolicy: Always
   # Overrides the image tag whose default is the chart appVersion.
 
