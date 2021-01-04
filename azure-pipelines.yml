@@ -53,7 +53,7 @@ stages:
           scriptType: bash
           scriptLocation: inlineScript
           inlineScript: |
-            sed -i "s/{{image-name}}/$(imageRepository)/g" ./firstapi-chart/values.yaml
+            sed -i "s|{{image-name}}|mycontainerwest.azurecr.io/firstapi-dev|g" ./firstapi-chart/values.yaml
             cat ./firstapi-chart/values.yaml
             sed -i "s/{{db-host}}/`az keyvault secret show --name db-host --vault-name $(keyVault) --query value | base64`/g; \
             	 s/{{db-name}}/`az keyvault secret show --name db-name --vault-name $(keyVault) --query value | base64`/g; \
@@ -80,4 +80,4 @@ stages:
           scriptLocation: inlineScript
           inlineScript: |
             az aks get-credentials --resource-group=$(resourceGroup) --name=$(kubernetesCluster)
-            helm upgrade --install firstapi . -f ./values.yaml
+            helm upgrade --install firstapi . -f ./values.yaml --namespace my-space
